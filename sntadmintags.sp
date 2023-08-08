@@ -145,4 +145,5 @@ public Action:Toggle_AdminTag(int client, int params)
             StaffTagEnabled[client] = false;
         }
     }
+    return Plugin_Handled;
 }

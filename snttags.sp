@@ -70,7 +70,6 @@ void ToggleTag(int client, char[] tagType, bool eraseTag)
 	char equippedTagBuffer[128];
 	char displayBuffer[128];
 	char colorBuffer[128];
-	AdminId clientAdmin = GetUserAdmin(client);
 	GetClientCookie(client, ckEquippedTag, equippedTagBuffer, 128);
 	if (kvPlayerTagList.JumpToKey("PlayerTags"))
 	{

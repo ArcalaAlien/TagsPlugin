@@ -10,15 +10,18 @@ public Plugin:myinfo =
 	name = "Surf'N'Turf Admin Tag System",
 	author = "Arcala the Gyiyg",
 	description = "Plugin that automatically adds tags to admin's names when they join the server",
-	version = "1.0.0",
+	version = "1.0.1",
 	url = "N/A"
 } 
 
 KeyValues kvStaffTagList;
+bool StaffTagEnabled[MAXPLAYERS + 1] = {false, ... };
+
 public void OnPluginStart() {
 
 	// Set new KeyValue list to first KeyValue Tree
 	kvStaffTagList = new KeyValues("SnTTags");
+    RegAdminCmd("sm_atag", Toggle_AdminTag, ADMFLAG_GENERIC, "Toggles whether your tag is being shown");
 
 	// Creats a file path that prints to the snttags.cfg file
 	char ConfigPath[PLATFORM_MAX_PATH];
@@ -67,29 +70,77 @@ public void OnClientPostAdminCheck(int client)
     AdminId connectedAdmin = GetUserAdmin(client);
     if (connectedAdmin)
     {
-        PrintToServer("Admin Connected");
         if (connectedAdmin.HasFlag(Admin_Root, Access_Real))
 		{
-            PrintToServer("Owner Connected");
             GetTag("owner", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
+            StaffTagEnabled[client] = !StaffTagEnabled[client];
             return;
         }
         else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
         {
-            PrintToServer("Admin Connected");
             GetTag("admin", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
+            StaffTagEnabled[client] = !StaffTagEnabled[client];
             return;
         }
         else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
         {
-            PrintToServer("Moderator Connected");
             GetTag("moderator", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
+            StaffTagEnabled[client] = !StaffTagEnabled[client];
+        }
+    }
+}
+
+public Action:Toggle_AdminTag(int client, int params)
+{
+    char tagBuffer[128];
+    char colorBuffer[128];
+    AdminId connectedAdmin = GetUserAdmin(client);
+    if (connectedAdmin && !StaffTagEnabled[client])
+    {
+        PrintToServer("Admin Connected");
+        if (connectedAdmin.HasFlag(Admin_Root, Access_Real))
+		{
+            GetTag("owner", tagBuffer, 128, colorBuffer, 128);
+            ChatProcessor_AddClientTag(client, tagBuffer);
+            ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
+            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            return;
+        }
+        else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
+        {
+            GetTag("admin", tagBuffer, 128, colorBuffer, 128);
+            ChatProcessor_AddClientTag(client, tagBuffer);
+            ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
+            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            return;
+        }
+        else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
+        {
+            GetTag("moderator", tagBuffer, 128, colorBuffer, 128);
+            ChatProcessor_AddClientTag(client, tagBuffer);
+            ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
+            StaffTagEnabled[client] = !StaffTagEnabled[client];
+        }
+    }
+    else if(connectedAdmin && StaffTagEnabled[client])
+    {
+        if (connectedAdmin.HasFlag(Admin_Root, Access_Real))
+        {
+            ChatProcessor_RemoveClientTag(client, "[Owner] ");
+        }
+        else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
+        {
+            ChatProcessor_RemoveClientTag(client, "[Admin] ");
+        }
+        else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
+        {
+            ChatProcessor_RemoveClientTag(client, "[Mod] ");
         }
     }
 }

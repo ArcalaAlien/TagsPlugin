@@ -75,7 +75,7 @@ public void OnClientPostAdminCheck(int client)
             GetTag("owner", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
-            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            StaffTagEnabled[client] = true;
             return;
         }
         else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
@@ -83,7 +83,7 @@ public void OnClientPostAdminCheck(int client)
             GetTag("admin", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
-            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            StaffTagEnabled[client] = true;
             return;
         }
         else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
@@ -91,7 +91,7 @@ public void OnClientPostAdminCheck(int client)
             GetTag("moderator", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
-            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            StaffTagEnabled[client] = true;
         }
     }
 }
@@ -103,13 +103,12 @@ public Action:Toggle_AdminTag(int client, int params)
     AdminId connectedAdmin = GetUserAdmin(client);
     if (connectedAdmin && !StaffTagEnabled[client])
     {
-        PrintToServer("Admin Connected");
         if (connectedAdmin.HasFlag(Admin_Root, Access_Real))
 		{
             GetTag("owner", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
-            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            StaffTagEnabled[client] = true;
             return;
         }
         else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
@@ -117,7 +116,7 @@ public Action:Toggle_AdminTag(int client, int params)
             GetTag("admin", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
-            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            StaffTagEnabled[client] = true;
             return;
         }
         else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
@@ -125,22 +124,25 @@ public Action:Toggle_AdminTag(int client, int params)
             GetTag("moderator", tagBuffer, 128, colorBuffer, 128);
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
-            StaffTagEnabled[client] = !StaffTagEnabled[client];
+            StaffTagEnabled[client] = true;
         }
     }
     else if(connectedAdmin && StaffTagEnabled[client])
     {
         if (connectedAdmin.HasFlag(Admin_Root, Access_Real))
         {
-            ChatProcessor_RemoveClientTag(client, "[Owner] ");
+            ChatProcessor_RemoveClientTag(client, "Owner | ");
+            StaffTagEnabled[client] = false;
         }
         else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
         {
-            ChatProcessor_RemoveClientTag(client, "[Admin] ");
+            ChatProcessor_RemoveClientTag(client, "Admin | ");
+            StaffTagEnabled[client] = false;
         }
         else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
         {
-            ChatProcessor_RemoveClientTag(client, "[Mod] ");
+            ChatProcessor_RemoveClientTag(client, "Mod | ");
+            StaffTagEnabled[client] = false;
         }
     }
 }

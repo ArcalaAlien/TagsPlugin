@@ -109,7 +109,7 @@ public Action:Toggle_AdminTag(int client, int params)
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
             StaffTagEnabled[client] = true;
-            return;
+            return Plugin_Handled;
         }
         else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
         {
@@ -117,7 +117,7 @@ public Action:Toggle_AdminTag(int client, int params)
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
             StaffTagEnabled[client] = true;
-            return;
+            return Plugin_Handled;
         }
         else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
         {
@@ -125,6 +125,7 @@ public Action:Toggle_AdminTag(int client, int params)
             ChatProcessor_AddClientTag(client, tagBuffer);
             ChatProcessor_SetTagColor(client, tagBuffer, colorBuffer);
             StaffTagEnabled[client] = true;
+            return Plugin_Handled;
         }
     }
     else if(connectedAdmin && StaffTagEnabled[client])
@@ -133,16 +134,19 @@ public Action:Toggle_AdminTag(int client, int params)
         {
             ChatProcessor_RemoveClientTag(client, "Owner | ");
             StaffTagEnabled[client] = false;
+            return Plugin_Handled;
         }
         else if(connectedAdmin.HasFlag(Admin_Unban, Access_Real))
         {
             ChatProcessor_RemoveClientTag(client, "Admin | ");
             StaffTagEnabled[client] = false;
+            return Plugin_Handled;
         }
         else if(connectedAdmin.HasFlag(Admin_Kick, Access_Real) && !connectedAdmin.HasFlag(Admin_Unban))
         {
             ChatProcessor_RemoveClientTag(client, "Mod | ");
             StaffTagEnabled[client] = false;
+            return Plugin_Handled;
         }
     }
     return Plugin_Handled;

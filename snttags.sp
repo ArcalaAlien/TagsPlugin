@@ -4,6 +4,7 @@
 #include <clientprefs>
 #include <keyvalues>
 #include <files>
+#include <topmenus>
 #include <chat-processor>
 
 public Plugin:myinfo =
@@ -17,7 +18,10 @@ public Plugin:myinfo =
 
 KeyValues kvPlayerTagList;
 Cookie ckEquippedTag;
-Menu mTagMenu;
+TopMenu mTagMenu;
+TopMenuObject mobjPlayerTags;
+TopMenuObject mobjAwardedTags;
+TopMenuObject mobjEarlyTags;
 
 bool bTagEquipped[MAXPLAYERS + 1] = { false, ... };
 
@@ -39,6 +43,12 @@ public void OnPluginStart() {
 
 	//Register the cookie that will keep track of what tag a client has equipped.
 	ckEquippedTag = RegClientCookie("Equipped_Tag", "The tag a player has equipped", CookieAccess_Protected);
+
+	mTagMenu = new TopMenu(TopMenu_TagCategories);
+	mobjPlayerTags = mTagMenu.AddCategory("PlayerTags", TopMenu_PlayerTags);
+	mobjAwardedTags = mTagMenu.AddCategory("ContestTags", TopMenu_ContestTags);
+	mobjEarlyTags = mTagMenu.AddCategory("SupporterTags", TopMenu_SupporterTags);
+
 }
 
 void GetTagInfo(char[] tagType, char[] displayBuffer, int displayBufferLen)
@@ -108,6 +118,61 @@ void ToggleTag(int client, char[] tagType, bool eraseTag)
 	}
 }	
 
+void TopMenu_TagCategories(TopMenu menu, TopMenuAction action, TopMenuObject topobj_id, int param, char[] buffer, int maxlength)
+{
+	if (action == TopMenuAction_DisplayTitle)
+	{
+		Format(buffer, maxlength, "SnT Tag Menu");
+	}
+	else if (action == TopMenuAction_DisplayOption)
+	{
+		if (topobj_id == mobjPlayerTags)
+		{
+			Format(buffer, maxlength, "Player Tags");
+		}
+		else if (topobj_id == mobjAwardedTags)
+		{
+			Format(buffer, maxlength, "Contest Tags");
+		}
+		else if (topobj_id == mobjEarlyTags)
+		{
+			Format(buffer, maxlength, "Early Supporter Tags");
+		}
+		else
+		{
+			Format(buffer, maxlength, "INVALID_MENU_OPTION");
+		}
+	}
+}
+
+void TopMenu_PlayerTags(TopMenu menu, TopMenuAction action, TopMenuObject topobj_id, int param, char[] buffer, int maxlength)
+{
+	if (action == TopMenuAction_DisplayTitle)
+	{
+		Format(buffer, maxlength, "SnT Tag Menu");
+	}
+	else if (action == TopMenuAction_DisplayOption)
+	{
+
+	}
+}
+
+void TopMenu_ContestTags(TopMenu menu, TopMenuAction action, TopMenuObject topobj_id, int param, char[] buffer, int maxlength)
+{
+	if (action == TopMenuAction_DisplayTitle)
+	{
+		Format(buffer, maxlength, "SnT Tag Menu");
+	}
+}
+
+void TopMenu_SupporterTags(TopMenu menu, TopMenuAction action, TopMenuObject topobj_id, int param, char[] buffer, int maxlength)
+{
+	if (action == TopMenuAction_DisplayTitle)
+	{
+		Format(buffer, maxlength, "SnT Tag Menu");
+	}
+}
+
 public void OnClientCookiesCached(int client)
 {
 	char equippedTagBuffer[128];
@@ -122,8 +187,6 @@ public void OnClientCookiesCached(int client)
 		ToggleTag(client, equippedTagBuffer, false);
 	}
 }
-
-
 
 // Thanks to the SourceMod API forums for this code.
 Menu BuildTagMenu()
@@ -177,7 +240,7 @@ Menu BuildTagMenu()
 
 public void OnMapStart()
 {
-    mTagMenu = BuildTagMenu();
+    //mTagMenu = BuildTopMenu();
 }
 
 public void OnMapEnd()
@@ -214,6 +277,6 @@ public Action:SetTag(int client, int args)
 	{
 		ReplyToCommand(client, "\x01\x04[SNTTags] Usage: \x01\x01/tag, /tags, or /tagmenu")
 	}
-	mTagMenu.Display(client, MENU_TIME_FOREVER);
+	mTagMenu.Display(client, TopMenuPosition_Start);
 	return Plugin_Handled;
 }
